@@ -1,4 +1,4 @@
-package me.fittie.fittie;
+package me.fittie.app;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;

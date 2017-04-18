@@ -1,4 +1,4 @@
-package me.fittie.fittie;
+package me.fittie.app;
 
 import org.junit.Test;
 

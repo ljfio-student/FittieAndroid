@@ -1,4 +1,4 @@
-package me.fittie.fittie;
+package me.fittie.app;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
