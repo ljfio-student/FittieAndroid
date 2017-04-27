@@ -20,8 +20,8 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         // TODO: Check if logged in
-        if (true) {
-            Intent intent = new Intent(this, BoardActivity.class);
+        if (false) {
+            Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             finish();
             startActivity(intent);
