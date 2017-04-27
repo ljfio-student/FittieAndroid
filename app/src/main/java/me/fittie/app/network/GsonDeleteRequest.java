@@ -22,13 +22,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
-public class GsonGetRequest<T> extends Request<T> {
+public class GsonDeleteRequest<T> extends Request<T> {
     private final Gson gson = new Gson();
     private final Class<T> theClass;
     private final Map<String, String> headers;
     private final Listener<T> listener;
-
-    private Map<String, String> params = null;
 
     /**
      * Make a GET request and return a parsed object from JSON.
@@ -37,45 +35,12 @@ public class GsonGetRequest<T> extends Request<T> {
      * @param theClass Relevant class object, for Gson's reflection
      * @param headers  Map of request headers
      */
-    public GsonGetRequest(String url, Class<T> theClass, Map<String, String> headers,
-                          Listener<T> listener, ErrorListener errorListener) {
-        super(Method.GET, url, errorListener);
+    public GsonDeleteRequest(String url, Class<T> theClass, Map<String, String> headers,
+                             Listener<T> listener, ErrorListener errorListener) {
+        super(Method.DELETE, url, errorListener);
         this.theClass = theClass;
         this.headers = headers;
         this.listener = listener;
-    }
-
-    public GsonGetRequest(String url, Class<T> theClass, Map<String, String> params, Map<String, String> headers,
-                          Listener<T> listener, ErrorListener errorListener) {
-        this(url, theClass, headers, listener, errorListener);
-        this.params = params;
-    }
-
-    @Override
-    public String getUrl() {
-        if (getParams() != null && !getParams().isEmpty()) {
-            String encoded = "";
-
-            try {
-                for (Map.Entry<String, String> pair : params.entrySet()) {
-                    // Check if this is the first key add question mark to start or ampersand to continue
-                    encoded += !encoded.contains("?") ? "?" : "&";
-                    // Add the key value pair
-                    encoded += pair.getKey() + "=" + URLEncoder.encode(pair.getValue(), "UTF-8");
-                }
-            } catch(UnsupportedEncodingException ex) {
-                Log.e(getClass().getSimpleName(), ex.getMessage());
-            }
-
-            return super.getUrl() + encoded;
-        }
-
-        return super.getUrl();
-    }
-
-    @Override
-    public Map<String, String> getParams() {
-        return params;
     }
 
     @Override
