@@ -7,4 +7,9 @@ package me.fittie.app.network.request;
 public class UserAuthenticateRequestObject {
     public String email;
     public String password;
+
+    public UserAuthenticateRequestObject(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }
