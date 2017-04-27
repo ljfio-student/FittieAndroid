@@ -44,7 +44,6 @@ public class NetWorker {
     public Map<String, String> getDefaultHeaders() {
         if (defaultHeaders == null) {
             defaultHeaders = new HashMap<String, String>();
-            defaultHeaders.put("", "");
         }
 
         return defaultHeaders;
