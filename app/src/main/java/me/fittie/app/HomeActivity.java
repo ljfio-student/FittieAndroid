@@ -13,6 +13,7 @@ import android.view.MenuItem;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
+import me.fittie.app.network.NetWorker;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -24,12 +25,17 @@ public class HomeActivity extends AppCompatActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         boolean logged_in = preferences.getBoolean("logged_in", false);
 
-        // TODO: Check if logged in
+        // Check if logged in
         if (!logged_in) {
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
             finish();
+
             startActivity(intent);
+        } else {
+            NetWorker.getInstance(getBaseContext())
+                    .setAuthenticationToken(preferences.getString("user_token", null));
         }
 
         // Setup the Toolbar
@@ -57,8 +63,10 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+
         adapter.addFragment(new HomeActivityFragment(), "DIETS");
         adapter.addFragment(new HomeActivityFragment(), "ROUTINES");
+
         viewPager.setAdapter(adapter);
     }
 

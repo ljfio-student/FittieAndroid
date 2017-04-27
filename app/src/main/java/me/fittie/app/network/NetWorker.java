@@ -49,6 +49,12 @@ public class NetWorker {
         return defaultHeaders;
     }
 
+    public void setAuthenticationToken(String token) {
+        if (token != null) {
+            getDefaultHeaders().put("Authorization", "Token " + token);
+        }
+    }
+
     public <T> void addToRequestQueue(Request<T> req) {
         getRequestQueue().add(req);
     }
