@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -65,6 +67,9 @@ public class HomeActivityFragment extends Fragment {
         // Load in data
         NetWorker instance = NetWorker.getInstance(getBaseContext());
 
+        Map<String, String> params = new HashMap<>();
+        params.put("basic", "true");
+
         String userDietUrl = String.format("https://api.fittie.me/user/%d/diet", userId);
 
         GsonGetRequest<UserDietsResponseObject> userDietRequest = new GsonGetRequest<>(
@@ -73,15 +78,11 @@ public class HomeActivityFragment extends Fragment {
                     for (int id : response.diets) {
                         String dietUrl = String.format("https://api.fittie.me/diet/%d", id);
 
-                        AtomicInteger integer = new AtomicInteger(0);
-
                         GsonGetRequest<DietResponseObject> dietRequest = new GsonGetRequest<>(
-                                dietUrl, DietResponseObject.class, instance.getDefaultHeaders(),
+                                dietUrl, DietResponseObject.class, instance.getDefaultHeaders(), params,
                                 (DietResponseObject dietResponse) -> {
                                     Diet diet = new Diet(id, dietResponse.name);
                                     dataSet.add(diet);
-
-                                    Log.i("HomeActivityFragment", dietResponse.toString());
 
                                     getActivity().runOnUiThread(() -> {
                                         adapter.notifyItemInserted(dataSet.indexOf(diet));
