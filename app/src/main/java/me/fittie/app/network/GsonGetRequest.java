@@ -45,7 +45,7 @@ public class GsonGetRequest<T> extends Request<T> {
         this.listener = listener;
     }
 
-    public GsonGetRequest(String url, Class<T> theClass, Map<String, String> params, Map<String, String> headers,
+    public GsonGetRequest(String url, Class<T> theClass, Map<String, String> headers, Map<String, String> params,
                           Listener<T> listener, ErrorListener errorListener) {
         this(url, theClass, headers, listener, errorListener);
         this.params = params;
@@ -92,6 +92,9 @@ public class GsonGetRequest<T> extends Request<T> {
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
         try {
             String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+
+            Log.i(getClass().getSimpleName(), "response: " + json);
+
             return Response.success(gson.fromJson(json, theClass), HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
