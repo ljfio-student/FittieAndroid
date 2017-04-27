@@ -223,7 +223,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 .putBoolean("logged_in", response.success)
                                 .putString("user_token", response.token)
                                 .putInt("user_id", response.id)
-                                .commit();
+                                .apply();
 
                         // Complete this activity
                         finish();
