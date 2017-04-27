@@ -13,9 +13,12 @@ import android.view.MenuItem;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
+import me.fittie.app.data.DietDataSetLoader;
+import me.fittie.app.data.RoutineDataSetLoader;
 import me.fittie.app.network.NetWorker;
 
 public class HomeActivity extends AppCompatActivity {
+    private int userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,8 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             NetWorker.getInstance(getBaseContext())
                     .setAuthenticationToken(preferences.getString("user_token", null));
+
+            userId = preferences.getInt("user_id", -4);
         }
 
         // Setup the Toolbar
@@ -64,8 +69,23 @@ public class HomeActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-        adapter.addFragment(new HomeActivityFragment(), "DIETS");
-        adapter.addFragment(new HomeActivityFragment(), "ROUTINES");
+        NetWorker instance = NetWorker.getInstance(getBaseContext());
+
+        // Diet Loader + Fragment
+        DietDataSetLoader loader = new DietDataSetLoader(userId);
+
+        HomeActivityFragment dietFragment = new HomeActivityFragment();
+        dietFragment.setLoader(loader);
+
+        adapter.addFragment(dietFragment, "DIETS");
+
+        // Routine Loader + Fragment
+        RoutineDataSetLoader routineLoader = new RoutineDataSetLoader(userId);
+
+        HomeActivityFragment routineFragment = new HomeActivityFragment();
+        routineFragment.setLoader(routineLoader);
+
+        adapter.addFragment(routineFragment, "ROUTINES");
 
         viewPager.setAdapter(adapter);
     }

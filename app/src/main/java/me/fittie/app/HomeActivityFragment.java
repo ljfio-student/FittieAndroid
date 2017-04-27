@@ -7,45 +7,32 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
+import java.util.List;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import me.fittie.app.models.Diet;
-import me.fittie.app.network.GsonGetRequest;
+import me.fittie.app.data.DataSetLoader;
+import me.fittie.app.models.Board;
 import me.fittie.app.network.NetWorker;
-import me.fittie.app.network.response.DietResponseObject;
-import me.fittie.app.network.response.UserDietsResponseObject;
 
 /**
  * A placeholder fragment containing a simple view.
  * This saved my bacon: http://stackoverflow.com/questions/34579614/how-to-implement-recyclerview-with-cardview-rows-in-a-fragment-with-tablayout
  */
-public class HomeActivityFragment extends Fragment {
-    private int userId;
-
+public class HomeActivityFragment<T extends Board> extends Fragment {
     private RecyclerView recyclerView;
     private CardAdapter adapter;
+    private DataSetLoader<T> loader;
 
-    public HomeActivityFragment() {
-    }
+    public HomeActivityFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        userId = preferences.getInt("user_id", -1);
 
         // Setup the recycler view
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
@@ -53,50 +40,22 @@ public class HomeActivityFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        CopyOnWriteArrayList<Diet> dataSet = new CopyOnWriteArrayList<>();
+        NetWorker worker = NetWorker.getInstance(getBaseContext());
+
+        List<? extends Board> dataSet = loader.Load(worker, (index) -> {
+            getActivity().runOnUiThread(() -> {
+                adapter.notifyItemInserted(index);
+            });
+        });
 
         adapter = new CardAdapter(dataSet);
         recyclerView.setAdapter(adapter);
 
-        loadDiets(dataSet);
-
         return view;
     }
 
-    private void loadDiets(CopyOnWriteArrayList<Diet> dataSet) {
-        // Load in data
-        NetWorker instance = NetWorker.getInstance(getBaseContext());
-
-        Map<String, String> params = new HashMap<>();
-        params.put("basic", "true");
-
-        String userDietUrl = String.format("https://api.fittie.me/user/%d/diet", userId);
-
-        GsonGetRequest<UserDietsResponseObject> userDietRequest = new GsonGetRequest<>(
-                userDietUrl, UserDietsResponseObject.class, instance.getDefaultHeaders(),
-                (UserDietsResponseObject response) -> {
-                    for (int id : response.diets) {
-                        String dietUrl = String.format("https://api.fittie.me/diet/%d", id);
-
-                        GsonGetRequest<DietResponseObject> dietRequest = new GsonGetRequest<>(
-                                dietUrl, DietResponseObject.class, instance.getDefaultHeaders(), params,
-                                (DietResponseObject dietResponse) -> {
-                                    Diet diet = new Diet(id, dietResponse.name);
-                                    dataSet.add(diet);
-
-                                    getActivity().runOnUiThread(() -> {
-                                        adapter.notifyItemInserted(dataSet.indexOf(diet));
-                                    });
-                                },
-                                (VolleyError error) -> {});
-
-                        instance.addToRequestQueue(dietRequest);
-                    }
-                },
-                (VolleyError error) -> {}
-        );
-
-        instance.addToRequestQueue(userDietRequest);
+    public void setLoader(DataSetLoader<T> loader) {
+        this.loader = loader;
     }
 
     private Context getBaseContext() {
@@ -104,9 +63,9 @@ public class HomeActivityFragment extends Fragment {
     }
 
     public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder> {
-        private CopyOnWriteArrayList<Diet> dataSet;
+        private List<? extends Board> dataSet;
 
-        public CardAdapter(CopyOnWriteArrayList<Diet> dataSet) {
+        public CardAdapter(List<? extends Board> dataSet) {
             this.dataSet = dataSet;
         }
 
@@ -121,8 +80,8 @@ public class HomeActivityFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(CardViewHolder holder, int position) {
-            Diet diet = dataSet.get(position);
-            holder.cardTitle.setText(diet.getName());
+            Board board = dataSet.get(position);
+            holder.cardTitle.setText(board.getName());
         }
 
         @Override
