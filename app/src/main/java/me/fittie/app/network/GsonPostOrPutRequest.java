@@ -40,10 +40,10 @@ public class GsonPostOrPutRequest<TReq, TRes> extends Request<TRes> {
      * @param requestClass Relevant class object, for Gson's reflection
      * @param headers  Map of request headers
      */
-    public GsonPostOrPutRequest(int method, String url, Class<TReq> requestClass, Class<TRes> responseClass,
+    public GsonPostOrPutRequest(boolean postNotPut, String url, Class<TReq> requestClass, Class<TRes> responseClass,
                                 Map<String, String> headers, TReq requestObject,
                                 Listener<TRes> listener, ErrorListener errorListener) {
-        super(method, url, errorListener);
+        super(postNotPut ? Method.POST : Method.PUT, url, errorListener);
 
         this.requestClass = requestClass;
         this.responseClass = responseClass;
@@ -68,6 +68,8 @@ public class GsonPostOrPutRequest<TReq, TRes> extends Request<TRes> {
     public byte[] getBody() throws AuthFailureError {
         String json = gson.toJson(requestObject, requestClass);
 
+        Log.i("GsonPostOrPutRequest", "request: " + json);
+
         try {
             return json.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -82,11 +84,18 @@ public class GsonPostOrPutRequest<TReq, TRes> extends Request<TRes> {
         try {
             String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
 
+            Log.i("GsonPostOrPutRequest", "response: " + json);
+
             return Response.success(gson.fromJson(json, responseClass), HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
         } catch (JsonSyntaxException e) {
             return Response.error(new ParseError(e));
         }
+    }
+
+    @Override
+    public String getBodyContentType() {
+        return "application/json";
     }
 }
