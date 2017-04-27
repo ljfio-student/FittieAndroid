@@ -1,9 +1,8 @@
 package me.fittie.app;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -81,7 +80,19 @@ public class HomeActivityFragment<T extends Board> extends Fragment {
         @Override
         public void onBindViewHolder(CardViewHolder holder, int position) {
             Board board = dataSet.get(position);
+
             holder.cardTitle.setText(board.getName());
+            holder.boardId = board.getId();
+
+            holder.cardButton.setOnClickListener((View v) -> {
+                Intent intent = new Intent(getActivity(), BoardActivity.class);
+
+                Bundle args = new Bundle();
+                args.putInt("id", holder.boardId);
+
+                intent.putExtras(args);
+                startActivity(intent);
+            });
         }
 
         @Override
@@ -93,6 +104,8 @@ public class HomeActivityFragment<T extends Board> extends Fragment {
             public TextView cardTitle;
             public TextView cardTextBody;
             public Button cardButton;
+
+            public Integer boardId;
 
             public CardViewHolder(View v) {
                 super(v);
