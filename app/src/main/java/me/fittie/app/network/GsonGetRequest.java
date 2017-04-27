@@ -5,6 +5,8 @@ package me.fittie.app.network;
  * https://developer.android.com/training/volley/request-custom.html
  */
 
+import android.util.Log;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -17,13 +19,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
-public class GsonRequest<T> extends Request<T> {
+public class GsonGetRequest<T> extends Request<T> {
     private final Gson gson = new Gson();
     private final Class<T> theClass;
     private final Map<String, String> headers;
     private final Listener<T> listener;
+
+    private Map<String, String> params = null;
 
     /**
      * Make a GET request and return a parsed object from JSON.
@@ -32,12 +37,45 @@ public class GsonRequest<T> extends Request<T> {
      * @param theClass Relevant class object, for Gson's reflection
      * @param headers  Map of request headers
      */
-    public GsonRequest(String url, Class<T> theClass, Map<String, String> headers,
-                       Listener<T> listener, ErrorListener errorListener) {
+    public GsonGetRequest(String url, Class<T> theClass, Map<String, String> headers,
+                          Listener<T> listener, ErrorListener errorListener) {
         super(Method.GET, url, errorListener);
         this.theClass = theClass;
         this.headers = headers;
         this.listener = listener;
+    }
+
+    public GsonGetRequest(String url, Class<T> theClass, Map<String, String> params, Map<String, String> headers,
+                          Listener<T> listener, ErrorListener errorListener) {
+        this(url, theClass, headers, listener, errorListener);
+        this.params = params;
+    }
+
+    @Override
+    public String getUrl() {
+        if (getParams() != null && !getParams().isEmpty()) {
+            String encoded = "";
+
+            try {
+                for (Map.Entry<String, String> pair : params.entrySet()) {
+                    // Check if this is the first key add question mark to start or ampersand to continue
+                    encoded += !encoded.contains("?") ? "?" : "&";
+                    // Add the key value pair
+                    encoded += pair.getKey() + "=" + URLEncoder.encode(pair.getValue(), "UTF-8");
+                }
+            } catch(UnsupportedEncodingException ex) {
+                Log.e("GsonGetRequest", ex.getMessage());
+            }
+
+            return super.getUrl() + encoded;
+        }
+
+        return super.getUrl();
+    }
+
+    @Override
+    public Map<String, String> getParams() {
+        return params;
     }
 
     @Override
