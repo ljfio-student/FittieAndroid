@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by luke on 27/04/2017.
  */
 
-public class DietResponse {
+public class DietResponseObject {
     public String name;
     public int owner;
 

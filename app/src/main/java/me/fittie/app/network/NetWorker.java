@@ -14,20 +14,20 @@ import com.android.volley.toolbox.Volley;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Networker {
-    private static Networker instance;
+public class NetWorker {
+    private static NetWorker instance;
     private RequestQueue requestQueue;
     private static Context context;
     private Map<String, String> defaultHeaders;
 
-    private Networker(Context context) {
-        Networker.context = context;
+    private NetWorker(Context context) {
+        NetWorker.context = context;
         requestQueue = getRequestQueue();
     }
 
-    public static synchronized Networker getInstance(Context context) {
+    public static synchronized NetWorker getInstance(Context context) {
         if (instance == null) {
-            instance = new Networker(context);
+            instance = new NetWorker(context);
         }
 
         return instance;
