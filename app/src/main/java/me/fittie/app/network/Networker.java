@@ -2,7 +2,9 @@ package me.fittie.app.network;
 
 /**
  * Created by luke on 27/04/2017.
+ * https://developer.android.com/training/volley/requestqueue.html
  */
+
 import android.content.Context;
 
 import com.android.volley.Request;
