@@ -6,13 +6,13 @@ import java.util.ArrayList;
  * Created by luke on 27/04/2017.
  */
 
-public class DietResponseObject {
+public class RoutineResponseObject {
     public String name;
     public int owner;
 
-    public ArrayList<MealDietResponseObject> meals;
+    public ArrayList<WorkoutRoutineResponseObject> workouts;
 
-    public class MealDietResponseObject {
+    public class WorkoutRoutineResponseObject {
         public int id;
         public int day;
         public int order;
@@ -20,6 +20,6 @@ public class DietResponseObject {
     }
 
     public String toString() {
-        return String.format("Diet '%s' has %d meals", name, meals.size());
+        return String.format("Routine '%s' has %d workout", name, workouts.size());
     }
 }
