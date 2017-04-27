@@ -11,10 +11,14 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Networker {
     private static Networker instance;
     private RequestQueue requestQueue;
     private static Context context;
+    private Map<String, String> defaultHeaders;
 
     private Networker(Context context) {
         Networker.context = context;
@@ -35,6 +39,15 @@ public class Networker {
         }
 
         return requestQueue;
+    }
+
+    public Map<String, String> getDefaultHeaders() {
+        if (defaultHeaders == null) {
+            defaultHeaders = new HashMap<String, String>();
+            defaultHeaders.put("", "");
+        }
+
+        return defaultHeaders;
     }
 
     public <T> void addToRequestQueue(Request<T> req) {
