@@ -1,5 +1,6 @@
 package me.fittie.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -17,6 +18,14 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // TODO: Check if logged in
+        if (false) {
+            Intent intent = new Intent(this,LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            finish();
+            startActivity(intent);
+        }
 
         // Setup the Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
