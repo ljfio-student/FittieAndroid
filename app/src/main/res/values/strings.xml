@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">Fittie</string>
     <string name="action_settings">Settings</string>
+
     <string name="title_activity_login">Login</string>
+    <string name="title_activity_home">Home</string>
+    <string name="title_activity_board">Board</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
