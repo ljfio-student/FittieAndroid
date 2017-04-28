@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -226,7 +227,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 .apply();
 
                         // Complete this activity
+                        Intent intent = new Intent(this, HomeActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                         finish();
+
+                        startActivity(intent);
                     }
 
                 }, (VolleyError error) -> {
