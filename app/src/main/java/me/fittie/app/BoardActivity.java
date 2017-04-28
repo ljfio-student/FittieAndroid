@@ -6,7 +6,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.android.volley.VolleyError;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import me.fittie.app.models.Item;
+import me.fittie.app.network.GsonRequestBuilder;
+import me.fittie.app.network.NetWorker;
+import me.fittie.app.network.response.DietResponseObject;
+
 public class BoardActivity extends AppCompatActivity {
+    private ConcurrentHashMap<Integer, CopyOnWriteArrayList<Item>> dataSet;
+
     private final int[] dayStrings = {
             R.string.board_day_monday,
             R.string.board_day_tuesday,
@@ -16,6 +28,14 @@ public class BoardActivity extends AppCompatActivity {
             R.string.board_day_saturday,
             R.string.board_day_sunday
     };
+
+    private void makeDataSet() {
+        dataSet = new ConcurrentHashMap<>();
+
+        for(int i = 0; i < dayStrings.length; i++) {
+            dataSet.put(i, new CopyOnWriteArrayList<>());
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +47,22 @@ public class BoardActivity extends AppCompatActivity {
 
         Log.i("BoardActivity", String.format("I've been given %d", boardId));
 
-        // TODO: Get the board name
-        setTitle("Boardy McBoardFace");
+        makeDataSet();
+
+        NetWorker worker = NetWorker.getInstance(getBaseContext());
+
+        GsonRequestBuilder.get(DietResponseObject.class)
+                .setHeaders(worker.getDefaultHeaders())
+                .setUrl(String.format("https://api.fittie.me/diet/%d", boardId))
+                .setListener((DietResponseObject response) -> {
+                    runOnUiThread(() -> {
+                        setTitle(response.name);
+                    });
+                })
+                .setErrorListener((VolleyError error) -> {
+                    Log.e("BoardActivity", error.toString());
+                })
+                .execute(worker);
 
         // Setup the ViewPager
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -43,9 +77,10 @@ public class BoardActivity extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         // Loop through each day and add to board
-        for (int i = 0; i < 7; i++) {
-            // TODO: Get data
-            adapter.addFragment(new BoardDayFragment(), getString(dayStrings[i]).toUpperCase());
+        for (int i = 0; i < dayStrings.length; i++) {
+            BoardDayFragment fragment = new BoardDayFragment();
+            fragment.setDataSet(dataSet.get(i));
+            adapter.addFragment(fragment, getString(dayStrings[i]).toUpperCase());
         }
 
         viewPager.setAdapter(adapter);
