@@ -67,7 +67,7 @@ public class BoardActivity extends AppCompatActivity {
                                 .setHeaders(worker.getDefaultHeaders())
                                 .setUrl(String.format("https://api.fittie.me/meal/%d", meal.id))
                                 .setListener((ItemRequestObject item) -> {
-                                    Meal newMeal = new Meal(meal.id, item.name, meal.order);
+                                    Meal newMeal = new Meal(meal.id, item.name, item.description, meal.order);
                                     dataSet.get(meal.day).add(newMeal);
                                 })
                                 .execute(worker);

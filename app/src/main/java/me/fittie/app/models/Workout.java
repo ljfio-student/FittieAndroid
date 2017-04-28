@@ -5,7 +5,7 @@ package me.fittie.app.models;
  */
 
 public class Workout extends Item {
-    public Workout(int id, String name, int order) {
-        super(id, name, order);
+    public Workout(int id, String name, String description, int order) {
+        super(id, name, description, order);
     }
 }

@@ -67,6 +67,7 @@ public class BoardDayFragment extends Fragment {
             Item item = dataSet.get(position);
 
             holder.cardTitle.setText(item.getName());
+            holder.cardTextBody.setText(item.getDescription());
             holder.boardId = item.getId();
         }
 
