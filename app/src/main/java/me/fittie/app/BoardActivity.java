@@ -12,8 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import me.fittie.app.models.Item;
+import me.fittie.app.models.Meal;
 import me.fittie.app.network.GsonRequestBuilder;
 import me.fittie.app.network.NetWorker;
+import me.fittie.app.network.request.ItemRequestObject;
 import me.fittie.app.network.response.DietResponseObject;
 
 public class BoardActivity extends AppCompatActivity {
@@ -57,6 +59,18 @@ public class BoardActivity extends AppCompatActivity {
                 .setListener((DietResponseObject response) -> {
                     runOnUiThread(() -> {
                         setTitle(response.name);
+                    });
+
+                    // TODO: Make this more efficient (caching?)
+                    response.meals.forEach(meal -> {
+                        GsonRequestBuilder.get(ItemRequestObject.class)
+                                .setHeaders(worker.getDefaultHeaders())
+                                .setUrl(String.format("https://api.fittie.me/meal/%d", meal.id))
+                                .setListener((ItemRequestObject item) -> {
+                                    Meal newMeal = new Meal(meal.id, item.name, meal.order);
+                                    dataSet.get(meal.day).add(newMeal);
+                                })
+                                .execute(worker);
                     });
                 })
                 .setErrorListener((VolleyError error) -> {
