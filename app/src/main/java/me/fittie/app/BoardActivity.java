@@ -4,6 +4,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 public class BoardActivity extends AppCompatActivity {
     private final int[] dayStrings = {
@@ -21,6 +22,13 @@ public class BoardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_board);
 
+        Bundle extras = getIntent().getExtras();
+        int boardId = extras.getInt("id", -1);
+
+        Log.i("BoardActivity", String.format("I've been given %d", boardId));
+
+        // TODO: Get the board name
+        setTitle("Boardy McBoardFace");
 
         // Setup the ViewPager
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
