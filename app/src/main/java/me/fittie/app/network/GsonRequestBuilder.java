@@ -1,11 +1,9 @@
 package me.fittie.app.network;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.Response.Listener;
-import com.android.volley.Response.ErrorListener;
 import com.android.volley.Request.Method;
-import com.google.gson.Gson;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
 
 import java.util.Map;
 
@@ -105,6 +103,10 @@ public class GsonRequestBuilder<TReq, TRes> {
         } else {
             return null;
         }
+    }
+
+    public void execute(NetWorker worker) {
+        worker.addToRequestQueue(build());
     }
 }
 
