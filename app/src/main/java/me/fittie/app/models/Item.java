@@ -15,4 +15,15 @@ public class Item {
         this.order = order;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getOrder() {
+        return order;
+    }
 }
