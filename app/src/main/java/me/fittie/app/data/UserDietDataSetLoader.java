@@ -18,10 +18,10 @@ import me.fittie.app.network.response.UserDietsResponseObject;
  * Created by Luke on 27/04/2017.
  */
 
-public class DietDataSetLoader implements DataSetLoader<Diet> {
+public class UserDietDataSetLoader implements DataSetLoader<Diet> {
     private int userId;
 
-    public DietDataSetLoader(int userId) {
+    public UserDietDataSetLoader(int userId) {
         this.userId = userId;
     }
 

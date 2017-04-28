@@ -18,10 +18,10 @@ import me.fittie.app.network.response.UserRoutinesResponseObject;
  * Created by Luke on 27/04/2017.
  */
 
-public class RoutineDataSetLoader implements DataSetLoader<Routine> {
+public class UserRoutineDataSetLoader implements DataSetLoader<Routine> {
     private int userId;
 
-    public RoutineDataSetLoader(int userId) {
+    public UserRoutineDataSetLoader(int userId) {
         this.userId = userId;
     }
 
