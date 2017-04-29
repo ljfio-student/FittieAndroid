@@ -1,5 +1,6 @@
 package me.fittie.app;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,8 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.List;
-
+import me.fittie.app.data.BoardDayLoader;
 import me.fittie.app.models.Item;
 
 /**
@@ -20,10 +20,7 @@ import me.fittie.app.models.Item;
 public class BoardDayFragment extends Fragment {
     private RecyclerView recyclerView;
     private CardAdapter adapter;
-
-    private List<? extends Item> dataSet;
-
-    public BoardDayFragment() { }
+    private BoardDayLoader loader;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,21 +33,34 @@ public class BoardDayFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new CardAdapter(dataSet);
+        adapter = new CardAdapter(loader);
         recyclerView.setAdapter(adapter);
+
+        loader.load(getBaseContext());
+
+        loader.addListener(pos -> {
+            getActivity().runOnUiThread(() -> {
+                adapter.notifyItemInserted(pos);
+            });
+        });
 
         return view;
     }
 
-    public void setDataSet(List<? extends Item> dataSet) {
-        this.dataSet = dataSet;
+    private Context getBaseContext() {
+        return getActivity().getBaseContext();
+    }
+
+    public void setLoader(BoardDayLoader loader) {
+        this.loader = loader;
+
     }
 
     public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder> {
-        private List<? extends Item> dataSet;
+        private BoardDayLoader loader;
 
-        public CardAdapter(List<? extends Item> dataSet) {
-            this.dataSet = dataSet;
+        public CardAdapter(BoardDayLoader loader) {
+            this.loader = loader;
         }
 
         @Override
@@ -64,7 +74,7 @@ public class BoardDayFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(CardViewHolder holder, int position) {
-            Item item = dataSet.get(position);
+            Item item = loader.getItem(position);
 
             holder.cardTitle.setText(item.getName());
             holder.cardTextBody.setText(item.getDescription());
@@ -73,7 +83,7 @@ public class BoardDayFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return dataSet.size();
+            return loader.getItemCount();
         }
 
         public class CardViewHolder extends RecyclerView.ViewHolder {

@@ -25,7 +25,7 @@ import me.fittie.app.network.NetWorker;
 public class HomeActivityFragment<T extends Board> extends Fragment {
     private RecyclerView recyclerView;
     private CardAdapter adapter;
-    private DataSetLoader<T> loader;
+    private DataSetLoader<T, Integer> loader;
 
     public HomeActivityFragment() { }
 
@@ -41,20 +41,22 @@ public class HomeActivityFragment<T extends Board> extends Fragment {
 
         NetWorker worker = NetWorker.getInstance(getBaseContext());
 
-        List<? extends Board> dataSet = loader.Load(worker, (index) -> {
-            getActivity().runOnUiThread(() -> {
-                adapter.notifyItemInserted(index);
-            });
-        });
-
-        adapter = new CardAdapter(dataSet);
+        adapter = new CardAdapter(loader);
         recyclerView.setAdapter(adapter);
+
+        loader.load(getBaseContext());
 
         return view;
     }
 
-    public void setLoader(DataSetLoader<T> loader) {
+    public void setLoader(DataSetLoader<T, Integer> loader) {
         this.loader = loader;
+
+        loader.addListener((index) -> {
+            getActivity().runOnUiThread(() -> {
+                adapter.notifyItemInserted(index);
+            });
+        });
     }
 
     private Context getBaseContext() {
@@ -62,10 +64,10 @@ public class HomeActivityFragment<T extends Board> extends Fragment {
     }
 
     public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder> {
-        private List<? extends Board> dataSet;
+        private DataSetLoader<? extends Board, Integer> loader;
 
-        public CardAdapter(List<? extends Board> dataSet) {
-            this.dataSet = dataSet;
+        public CardAdapter(DataSetLoader<? extends Board, Integer> loader) {
+            this.loader = loader;
         }
 
         @Override
@@ -79,7 +81,7 @@ public class HomeActivityFragment<T extends Board> extends Fragment {
 
         @Override
         public void onBindViewHolder(CardViewHolder holder, int position) {
-            Board board = dataSet.get(position);
+            Board board = loader.getDataSet().get(position);
 
             holder.cardTitle.setText(board.getName());
             holder.boardId = board.getId();
@@ -97,7 +99,7 @@ public class HomeActivityFragment<T extends Board> extends Fragment {
 
         @Override
         public int getItemCount() {
-            return dataSet.size();
+            return loader.getDataSet().size();
         }
 
         public class CardViewHolder extends RecyclerView.ViewHolder {

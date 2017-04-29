@@ -1,25 +1,18 @@
 package me.fittie.app;
 
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 
-import com.android.volley.VolleyError;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import me.fittie.app.models.Item;
-import me.fittie.app.models.Meal;
-import me.fittie.app.network.GsonRequestBuilder;
-import me.fittie.app.network.NetWorker;
-import me.fittie.app.network.request.ItemRequestObject;
-import me.fittie.app.network.response.DietResponseObject;
+import me.fittie.app.data.BoardDayLoader;
+import me.fittie.app.data.BoardLoader;
+import me.fittie.app.data.DietLoader;
 
 public class BoardActivity extends AppCompatActivity {
-    private ConcurrentHashMap<Integer, CopyOnWriteArrayList<Item>> dataSet;
+    private ViewPagerAdapter adapter;
+    private BoardLoader loader;
 
     private final int[] dayStrings = {
             R.string.board_day_monday,
@@ -31,14 +24,6 @@ public class BoardActivity extends AppCompatActivity {
             R.string.board_day_sunday
     };
 
-    private void makeDataSet() {
-        dataSet = new ConcurrentHashMap<>();
-
-        for(int i = 0; i < dayStrings.length; i++) {
-            dataSet.put(i, new CopyOnWriteArrayList<>());
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,34 +34,7 @@ public class BoardActivity extends AppCompatActivity {
 
         Log.i("BoardActivity", String.format("I've been given %d", boardId));
 
-        makeDataSet();
-
-        NetWorker worker = NetWorker.getInstance(getBaseContext());
-
-        GsonRequestBuilder.get(DietResponseObject.class)
-                .setHeaders(worker.getDefaultHeaders())
-                .setUrl(String.format("https://api.fittie.me/diet/%d", boardId))
-                .setListener((DietResponseObject response) -> {
-                    runOnUiThread(() -> {
-                        setTitle(response.name);
-                    });
-
-                    // TODO: Make this more efficient (caching?)
-                    response.meals.forEach(meal -> {
-                        GsonRequestBuilder.get(ItemRequestObject.class)
-                                .setHeaders(worker.getDefaultHeaders())
-                                .setUrl(String.format("https://api.fittie.me/meal/%d", meal.id))
-                                .setListener((ItemRequestObject item) -> {
-                                    Meal newMeal = new Meal(meal.id, item.name, item.description, meal.order);
-                                    dataSet.get(meal.day).add(newMeal);
-                                })
-                                .execute(worker);
-                    });
-                })
-                .setErrorListener((VolleyError error) -> {
-                    Log.e("BoardActivity", error.toString());
-                })
-                .execute(worker);
+        loader = new DietLoader(boardId);
 
         // Setup the ViewPager
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -88,16 +46,19 @@ public class BoardActivity extends AppCompatActivity {
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         // Loop through each day and add to board
         for (int i = 0; i < dayStrings.length; i++) {
             BoardDayFragment fragment = new BoardDayFragment();
-            fragment.setDataSet(dataSet.get(i));
+
+            BoardDayLoader dayLoader = loader.getDayLoader(i);
+
+            fragment.setLoader(dayLoader);
+
             adapter.addFragment(fragment, getString(dayStrings[i]).toUpperCase());
         }
 
         viewPager.setAdapter(adapter);
     }
-
 }
