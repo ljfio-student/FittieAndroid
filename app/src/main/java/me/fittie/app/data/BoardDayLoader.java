@@ -11,7 +11,7 @@ import me.fittie.app.models.Item;
  * Created by luke on 29/04/2017.
  */
 
-public abstract class BoardDayLoader extends DataSetLoader<Item, Integer> {
+public abstract class BoardDayLoader extends DataLoader<Item, Integer> {
     private int day;
     private BoardLoader loader;
 

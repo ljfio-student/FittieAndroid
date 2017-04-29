@@ -13,7 +13,7 @@ import me.fittie.app.models.Item;
  * Created by luke on 29/04/2017.
  */
 
-public abstract class BoardLoader extends DataSetLoader<Item, Pair<Integer, Integer>> {
+public abstract class BoardLoader extends DataLoader<Item, Pair<Integer, Integer>> {
     private int boardId;
 
     private Map<Pair<Integer, Integer>, Item> dataSet = new ConcurrentHashMap<>();

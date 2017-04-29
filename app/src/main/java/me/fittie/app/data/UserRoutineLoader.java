@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 
 import me.fittie.app.models.Routine;
 import me.fittie.app.network.GsonGetRequest;
@@ -20,11 +19,11 @@ import me.fittie.app.network.response.UserRoutinesResponseObject;
  * Created by Luke on 27/04/2017.
  */
 
-public class UserRoutineDataSetLoader extends DataSetLoader<Routine,Integer> {
+public class UserRoutineLoader extends DataLoader<Routine,Integer> {
     private int userId;
     private List<Routine> dataSet = new CopyOnWriteArrayList<>();
 
-    public UserRoutineDataSetLoader(int userId) {
+    public UserRoutineLoader(int userId) {
         this.userId = userId;
     }
 

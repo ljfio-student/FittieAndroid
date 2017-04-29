@@ -13,8 +13,8 @@ import android.view.MenuItem;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
-import me.fittie.app.data.UserDietDataSetLoader;
-import me.fittie.app.data.UserRoutineDataSetLoader;
+import me.fittie.app.data.UserDietLoader;
+import me.fittie.app.data.UserRoutineLoader;
 import me.fittie.app.network.NetWorker;
 
 public class HomeActivity extends AppCompatActivity {
@@ -72,7 +72,7 @@ public class HomeActivity extends AppCompatActivity {
         NetWorker instance = NetWorker.getInstance(getBaseContext());
 
         // Diet Loader + Fragment
-        UserDietDataSetLoader loader = new UserDietDataSetLoader(userId);
+        UserDietLoader loader = new UserDietLoader(userId);
 
         HomeActivityFragment dietFragment = new HomeActivityFragment();
         dietFragment.setLoader(loader);
@@ -80,7 +80,7 @@ public class HomeActivity extends AppCompatActivity {
         adapter.addFragment(dietFragment, "DIETS");
 
         // Routine Loader + Fragment
-        UserRoutineDataSetLoader routineLoader = new UserRoutineDataSetLoader(userId);
+        UserRoutineLoader routineLoader = new UserRoutineLoader(userId);
 
         HomeActivityFragment routineFragment = new HomeActivityFragment();
         routineFragment.setLoader(routineLoader);

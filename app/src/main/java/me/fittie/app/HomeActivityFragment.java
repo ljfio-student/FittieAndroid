@@ -12,9 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.List;
-
-import me.fittie.app.data.DataSetLoader;
+import me.fittie.app.data.DataLoader;
 import me.fittie.app.models.Board;
 import me.fittie.app.network.NetWorker;
 
@@ -25,7 +23,7 @@ import me.fittie.app.network.NetWorker;
 public class HomeActivityFragment<T extends Board> extends Fragment {
     private RecyclerView recyclerView;
     private CardAdapter adapter;
-    private DataSetLoader<T, Integer> loader;
+    private DataLoader<T, Integer> loader;
 
     public HomeActivityFragment() { }
 
@@ -49,7 +47,7 @@ public class HomeActivityFragment<T extends Board> extends Fragment {
         return view;
     }
 
-    public void setLoader(DataSetLoader<T, Integer> loader) {
+    public void setLoader(DataLoader<T, Integer> loader) {
         this.loader = loader;
 
         loader.addListener((index) -> {
@@ -64,9 +62,9 @@ public class HomeActivityFragment<T extends Board> extends Fragment {
     }
 
     public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder> {
-        private DataSetLoader<? extends Board, Integer> loader;
+        private DataLoader<? extends Board, Integer> loader;
 
-        public CardAdapter(DataSetLoader<? extends Board, Integer> loader) {
+        public CardAdapter(DataLoader<? extends Board, Integer> loader) {
             this.loader = loader;
         }
 

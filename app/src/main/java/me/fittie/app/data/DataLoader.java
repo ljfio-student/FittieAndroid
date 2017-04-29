@@ -10,10 +10,10 @@ import java.util.function.Consumer;
  * Created by Luke on 27/04/2017.
  */
 
-public abstract class DataSetLoader<T, U> {
+public abstract class DataLoader<T, U> {
     private List<Consumer<U>> listeners;
 
-    public DataSetLoader() {
+    public DataLoader() {
         listeners = new CopyOnWriteArrayList<>();
     }
 

@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 
 import me.fittie.app.models.Diet;
 import me.fittie.app.network.GsonGetRequest;
@@ -20,11 +19,11 @@ import me.fittie.app.network.response.UserDietsResponseObject;
  * Created by Luke on 27/04/2017.
  */
 
-public class UserDietDataSetLoader extends DataSetLoader<Diet, Integer> {
+public class UserDietLoader extends DataLoader<Diet, Integer> {
     private int userId;
     private List<Diet> dataSet = new CopyOnWriteArrayList<>();
 
-    public UserDietDataSetLoader(int userId) {
+    public UserDietLoader(int userId) {
         this.userId = userId;
     }
 
