@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
+import me.fittie.app.models.Board;
 import me.fittie.app.models.Item;
 
 /**
@@ -17,6 +19,7 @@ import me.fittie.app.models.Item;
 
 public abstract class BoardLoader extends DataLoader<Item, Pair<Integer, Integer>> {
     private int boardId;
+    protected Consumer<Board> loadedListener;
 
     private Map<Pair<Integer, Integer>, Item> dataSet = new ConcurrentHashMap<>();
     private Map<Integer, AtomicInteger> dayCount = new ConcurrentHashMap<>();
@@ -58,5 +61,9 @@ public abstract class BoardLoader extends DataLoader<Item, Pair<Integer, Integer
 
     public int getDaySize(int day) {
         return dayCount.get(day).get();
+    }
+
+    public void setLoadedListener(Consumer<Board> loadedListener) {
+        this.loadedListener = loadedListener;
     }
 }

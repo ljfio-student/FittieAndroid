@@ -9,6 +9,7 @@ import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
 
+import me.fittie.app.models.Diet;
 import me.fittie.app.models.Item;
 import me.fittie.app.models.Meal;
 import me.fittie.app.network.GsonRequestBuilder;
@@ -35,6 +36,8 @@ public class DietLoader extends BoardLoader {
                 .setHeaders(worker.getDefaultHeaders())
                 .setUrl(String.format("https://api.fittie.me/diet/%d", getBoardId()))
                 .setListener((DietResponseObject response) -> {
+                    loadedListener.accept(new Diet(getBoardId(), response.name));
+
                     // TODO: Update the page
                     Log.i("DietLoader", "Got me: " + response.name);
 

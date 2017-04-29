@@ -37,6 +37,12 @@ public class BoardActivity extends AppCompatActivity {
         loader = new DietLoader(boardId);
         loader.load(getBaseContext());
 
+        loader.setLoadedListener(board -> {
+            runOnUiThread(() -> {
+                setTitle(board.getName());
+            });
+        });
+
         // Setup the ViewPager
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
