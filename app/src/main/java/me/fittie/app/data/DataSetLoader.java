@@ -1,13 +1,10 @@
 package me.fittie.app.data;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
-
-import me.fittie.app.network.NetWorker;
 
 /**
  * Created by Luke on 27/04/2017.
