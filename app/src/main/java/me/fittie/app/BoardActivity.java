@@ -35,6 +35,7 @@ public class BoardActivity extends AppCompatActivity {
         Log.i("BoardActivity", String.format("I've been given %d", boardId));
 
         loader = new DietLoader(boardId);
+        loader.load(getBaseContext());
 
         // Setup the ViewPager
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);

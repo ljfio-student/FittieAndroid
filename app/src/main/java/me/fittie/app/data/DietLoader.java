@@ -36,6 +36,7 @@ public class DietLoader extends BoardLoader {
                 .setUrl(String.format("https://api.fittie.me/diet/%d", getBoardId()))
                 .setListener((DietResponseObject response) -> {
                     // TODO: Update the page
+                    Log.i("DietLoader", "Got me: " + response.name);
 
                     // TODO: Make this more efficient (caching?)
                     response.meals.forEach(meal -> {
@@ -48,6 +49,7 @@ public class DietLoader extends BoardLoader {
                                 addItem(Pair.create(meal.day, meal.order), newMeal);
 
                                 // TODO: Notify that we have added to the UI
+                                Log.i("DietLoader", "Meal added via SQL");
                             } else {
                                 GsonRequestBuilder.get(ItemRequestObject.class)
                                         .setHeaders(worker.getDefaultHeaders())
@@ -57,6 +59,7 @@ public class DietLoader extends BoardLoader {
                                             addItem(Pair.create(meal.day, meal.order), newMeal);
 
                                             // TODO: Notify that we have added to the UI
+                                            Log.i("DietLoader", "Meal added via SQL");
 
                                             try {
                                                 mealDao.create(newMeal);
