@@ -1,5 +1,7 @@
 package me.fittie.app.data;
 
+import android.content.Context;
+
 import com.android.volley.VolleyError;
 
 import java.util.HashMap;
@@ -18,15 +20,22 @@ import me.fittie.app.network.response.UserDietsResponseObject;
  * Created by Luke on 27/04/2017.
  */
 
-public class UserDietDataSetLoader implements DataSetLoader<Diet> {
+public class UserDietDataSetLoader extends DataSetLoader<Diet, Integer> {
     private int userId;
+    private List<Diet> dataSet = new CopyOnWriteArrayList<>();
 
     public UserDietDataSetLoader(int userId) {
         this.userId = userId;
     }
 
-    public List<Diet> Load(NetWorker worker, Consumer<Integer> after) {
-        CopyOnWriteArrayList<Diet> dataSet = new CopyOnWriteArrayList<>();
+    @Override
+    public List<Diet> getDataSet() {
+        return dataSet;
+    }
+
+    @Override
+    public void load(Context context) {
+        NetWorker worker = NetWorker.getInstance(context);
 
         // Load in data
         Map<String, String> params = new HashMap<>();
@@ -46,7 +55,7 @@ public class UserDietDataSetLoader implements DataSetLoader<Diet> {
                                     Diet diet = new Diet(id, dietResponse.name);
                                     dataSet.add(diet);
 
-                                    after.accept(dataSet.indexOf(diet));
+                                    notifyListeners(dataSet.indexOf(diet));
                                 },
                                 (VolleyError error) -> {});
 
@@ -57,7 +66,5 @@ public class UserDietDataSetLoader implements DataSetLoader<Diet> {
         );
 
         worker.addToRequestQueue(userDietRequest);
-
-        return dataSet;
     }
 }

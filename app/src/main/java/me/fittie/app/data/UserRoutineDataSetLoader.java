@@ -1,5 +1,7 @@
 package me.fittie.app.data;
 
+import android.content.Context;
+
 import com.android.volley.VolleyError;
 
 import java.util.HashMap;
@@ -18,15 +20,22 @@ import me.fittie.app.network.response.UserRoutinesResponseObject;
  * Created by Luke on 27/04/2017.
  */
 
-public class UserRoutineDataSetLoader implements DataSetLoader<Routine> {
+public class UserRoutineDataSetLoader extends DataSetLoader<Routine,Integer> {
     private int userId;
+    private List<Routine> dataSet = new CopyOnWriteArrayList<>();
 
     public UserRoutineDataSetLoader(int userId) {
         this.userId = userId;
     }
 
-    public List<Routine> Load(NetWorker worker, Consumer<Integer> after) {
-        CopyOnWriteArrayList<Routine> dataSet = new CopyOnWriteArrayList<>();
+    @Override
+    public List<Routine> getDataSet() {
+        return dataSet;
+    }
+
+    @Override
+    public void load(Context context) {
+        NetWorker worker = NetWorker.getInstance(context);
 
         // Load in data
         Map<String, String> params = new HashMap<>();
@@ -46,7 +55,7 @@ public class UserRoutineDataSetLoader implements DataSetLoader<Routine> {
                                     Routine routine = new Routine(id, routineResponse.name);
                                     dataSet.add(routine);
 
-                                    after.accept(dataSet.indexOf(routine));
+                                    notifyListeners(dataSet.indexOf(routine));
                                 },
                                 (VolleyError error) -> {});
 
@@ -57,7 +66,5 @@ public class UserRoutineDataSetLoader implements DataSetLoader<Routine> {
         );
 
         worker.addToRequestQueue(userRoutineRequest);
-
-        return dataSet;
     }
 }
