@@ -3,6 +3,8 @@ package me.fittie.app.data;
 import android.content.Context;
 
 import com.android.volley.VolleyError;
+import com.github.ljfio.requester.GetRequest;
+import com.github.ljfio.requester.RequestWorker;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +12,6 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import me.fittie.app.models.Diet;
-import me.fittie.app.network.GsonGetRequest;
-import me.fittie.app.network.NetWorker;
 import me.fittie.app.network.response.DietResponseObject;
 import me.fittie.app.network.response.UserDietsResponseObject;
 
@@ -34,7 +34,7 @@ public class UserDietLoader extends DataLoader<Diet, Integer> {
 
     @Override
     public void load(Context context) {
-        NetWorker worker = NetWorker.getInstance(context);
+        RequestWorker worker = RequestWorker.getInstance(context);
 
         // Load in data
         Map<String, String> params = new HashMap<>();
@@ -42,14 +42,14 @@ public class UserDietLoader extends DataLoader<Diet, Integer> {
 
         String userDietUrl = String.format("https://api.fittie.me/user/%d/diet", userId);
 
-        GsonGetRequest<UserDietsResponseObject> userDietRequest = new GsonGetRequest<>(
-                userDietUrl, UserDietsResponseObject.class, worker.getDefaultHeaders(),
+        GetRequest<UserDietsResponseObject> userDietRequest = new GetRequest<>(
+                userDietUrl, worker.getDefaultHeaders(), UserDietsResponseObject.class,
                 (UserDietsResponseObject response) -> {
                     for (int id : response.diets) {
                         String dietUrl = String.format("https://api.fittie.me/diet/%d", id);
 
-                        GsonGetRequest<DietResponseObject> dietRequest = new GsonGetRequest<>(
-                                dietUrl, DietResponseObject.class, worker.getDefaultHeaders(), params,
+                        GetRequest<DietResponseObject> dietRequest = new GetRequest<>(
+                                dietUrl, worker.getDefaultHeaders(), params, DietResponseObject.class,
                                 (DietResponseObject dietResponse) -> {
                                     Diet diet = new Diet(id, dietResponse.name);
                                     dataSet.add(diet);

@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import me.fittie.app.data.DataLoader;
 import me.fittie.app.models.Board;
-import me.fittie.app.network.NetWorker;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -36,8 +35,6 @@ public class HomeActivityFragment<T extends Board> extends Fragment {
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-
-        NetWorker worker = NetWorker.getInstance(getBaseContext());
 
         adapter = new CardAdapter(loader);
         recyclerView.setAdapter(adapter);

@@ -3,6 +3,8 @@ package me.fittie.app.data;
 import android.content.Context;
 
 import com.android.volley.VolleyError;
+import com.github.ljfio.requester.GetRequest;
+import com.github.ljfio.requester.RequestWorker;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +12,6 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import me.fittie.app.models.Routine;
-import me.fittie.app.network.GsonGetRequest;
-import me.fittie.app.network.NetWorker;
 import me.fittie.app.network.response.RoutineResponseObject;
 import me.fittie.app.network.response.UserRoutinesResponseObject;
 
@@ -34,7 +34,7 @@ public class UserRoutineLoader extends DataLoader<Routine,Integer> {
 
     @Override
     public void load(Context context) {
-        NetWorker worker = NetWorker.getInstance(context);
+        RequestWorker worker = RequestWorker.getInstance(context);
 
         // Load in data
         Map<String, String> params = new HashMap<>();
@@ -42,14 +42,14 @@ public class UserRoutineLoader extends DataLoader<Routine,Integer> {
 
         String userRoutineUrl = String.format("https://api.fittie.me/user/%d/routine", userId);
 
-        GsonGetRequest<UserRoutinesResponseObject> userRoutineRequest = new GsonGetRequest<>(
-                userRoutineUrl, UserRoutinesResponseObject.class, worker.getDefaultHeaders(),
+        GetRequest<UserRoutinesResponseObject> userRoutineRequest = new GetRequest<>(
+                userRoutineUrl, worker.getDefaultHeaders(), UserRoutinesResponseObject.class,
                 (UserRoutinesResponseObject response) -> {
                     for (int id : response.routines) {
                         String routineUrl = String.format("https://api.fittie.me/routine/%d", id);
 
-                        GsonGetRequest<RoutineResponseObject> routineRequest = new GsonGetRequest<>(
-                                routineUrl, RoutineResponseObject.class, worker.getDefaultHeaders(), params,
+                        GetRequest<RoutineResponseObject> routineRequest = new GetRequest<>(
+                                routineUrl, worker.getDefaultHeaders(), params, RoutineResponseObject.class,
                                 (RoutineResponseObject routineResponse) -> {
                                     Routine routine = new Routine(id, routineResponse.name);
                                     dataSet.add(routine);

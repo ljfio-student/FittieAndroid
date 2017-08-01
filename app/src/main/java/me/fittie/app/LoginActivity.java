@@ -31,6 +31,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
+import com.github.ljfio.requester.RequestBuilder;
+import com.github.ljfio.requester.RequestWorker;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -39,8 +41,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.fittie.app.network.GsonPostOrPutRequest;
-import me.fittie.app.network.NetWorker;
 import me.fittie.app.network.request.UserAuthenticateRequestObject;
 import me.fittie.app.network.response.UserAuthenticatedResponseObject;
 
@@ -202,44 +202,45 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
 
             // Get the NetWorker instance
-            NetWorker worker = NetWorker.getInstance(getBaseContext());
+            RequestWorker worker = RequestWorker.getInstance(getBaseContext());
 
             UserAuthenticateRequestObject requestObject =
                     new UserAuthenticateRequestObject(email, hashedPassword.toLowerCase());
 
-            GsonPostOrPutRequest<UserAuthenticateRequestObject, UserAuthenticatedResponseObject> request = new GsonPostOrPutRequest<>(
-                true, "https://api.fittie.me/login", UserAuthenticateRequestObject.class, UserAuthenticatedResponseObject.class,
-                worker.getDefaultHeaders(), requestObject,
-                (UserAuthenticatedResponseObject response) -> {
-                    Log.i("LoginActivity", response.success ? "success" : "failure");
+            RequestBuilder.post(UserAuthenticatedResponseObject.class, UserAuthenticateRequestObject.class)
+                    .setHeaders(worker.getDefaultHeaders())
+                    .setUrl("https://api.fittie.me/login")
+                    .setRequestObject(requestObject)
+                    .setListener((UserAuthenticatedResponseObject response) -> {
+                        Log.i("LoginActivity", response.success ? "success" : "failure");
 
-                    showProgress(false);
+                        showProgress(false);
 
-                    if (!response.success) {
-                        mPasswordView.setError(getString(R.string.error_incorrect_password));
-                        mPasswordView.requestFocus();
-                    } else {
-                        // Store the Token and User Id
-                        preferences.edit()
-                                .putBoolean("logged_in", response.success)
-                                .putString("user_token", response.token)
-                                .putInt("user_id", response.id)
-                                .apply();
+                        if (!response.success) {
+                            mPasswordView.setError(getString(R.string.error_incorrect_password));
+                            mPasswordView.requestFocus();
+                        } else {
+                            // Store the Token and User Id
+                            preferences.edit()
+                                    .putBoolean("logged_in", response.success)
+                                    .putString("user_token", response.token)
+                                    .putInt("user_id", response.id)
+                                    .apply();
 
-                        // Complete this activity
-                        Intent intent = new Intent(this, HomeActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            // Complete this activity
+                            Intent intent = new Intent(this, HomeActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                        finish();
+                            finish();
 
-                        startActivity(intent);
-                    }
+                            startActivity(intent);
+                        }
 
-                }, (VolleyError error) -> {
-                    Log.e("LoginActivity", error.toString());
-                });
-
-            worker.addToRequestQueue(request);
+                    })
+                    .setErrorListener((VolleyError error) -> {
+                        Log.e("LoginActivity", error.toString());
+                    })
+                    .execute(worker);
         }
     }
 

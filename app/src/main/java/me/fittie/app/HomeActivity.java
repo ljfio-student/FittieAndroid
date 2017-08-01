@@ -15,7 +15,7 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import me.fittie.app.data.UserDietLoader;
 import me.fittie.app.data.UserRoutineLoader;
-import me.fittie.app.network.NetWorker;
+import com.github.ljfio.requester.RequestWorker;
 
 public class HomeActivity extends AppCompatActivity {
     private int userId;
@@ -37,8 +37,9 @@ public class HomeActivity extends AppCompatActivity {
 
             startActivity(intent);
         } else {
-            NetWorker.getInstance(getBaseContext())
-                    .setAuthenticationToken(preferences.getString("user_token", null));
+            RequestWorker.getInstance(getBaseContext())
+                    .getDefaultHeaders()
+                    .put("Authorization", "Token " + preferences.getString("user_token", ""));
 
             userId = preferences.getInt("user_id", -4);
         }
@@ -69,7 +70,7 @@ public class HomeActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-        NetWorker instance = NetWorker.getInstance(getBaseContext());
+        RequestWorker instance = RequestWorker.getInstance(getBaseContext());
 
         // Diet Loader + Fragment
         UserDietLoader loader = new UserDietLoader(userId);

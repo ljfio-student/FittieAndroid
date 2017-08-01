@@ -5,6 +5,8 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.android.volley.VolleyError;
+import com.github.ljfio.requester.RequestBuilder;
+import com.github.ljfio.requester.RequestWorker;
 import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
@@ -12,8 +14,6 @@ import java.sql.SQLException;
 import me.fittie.app.models.Diet;
 import me.fittie.app.models.Item;
 import me.fittie.app.models.Meal;
-import me.fittie.app.network.GsonRequestBuilder;
-import me.fittie.app.network.NetWorker;
 import me.fittie.app.network.request.ItemRequestObject;
 import me.fittie.app.network.response.DietResponseObject;
 
@@ -29,10 +29,10 @@ public class DietLoader extends BoardLoader {
 
     @Override
     public void load(Context context) {
-        NetWorker worker = NetWorker.getInstance(context);
+        RequestWorker worker = RequestWorker.getInstance(context);
         SQLDatabaseHelper helper = new SQLDatabaseHelper(context);
 
-        GsonRequestBuilder.get(DietResponseObject.class)
+        RequestBuilder.get(DietResponseObject.class)
                 .setHeaders(worker.getDefaultHeaders())
                 .setUrl(String.format("https://api.fittie.me/diet/%d", getBoardId()))
                 .setListener((DietResponseObject response) -> {
@@ -54,7 +54,7 @@ public class DietLoader extends BoardLoader {
                                 // TODO: Notify that we have added to the UI
                                 Log.i("DietLoader", "Meal added via SQL");
                             } else {
-                                GsonRequestBuilder.get(ItemRequestObject.class)
+                                RequestBuilder.get(ItemRequestObject.class)
                                         .setHeaders(worker.getDefaultHeaders())
                                         .setUrl(String.format("https://api.fittie.me/meal/%d", meal.id))
                                         .setListener((ItemRequestObject item) -> {
